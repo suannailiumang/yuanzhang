@@ -104,6 +104,7 @@ input[type=text]{font:inherit;width:100%;padding:10px;border-radius:12px;border:
 </div>
 <div class="card"><h2>Licensing Officer</h2>
   <div class="two"><span>下次定期检查：<b id="next"></b></span><span>本季投诉 <b id="comp"></b></span></div>
+  <div class="two" style="margin-top:4px"><span>整改记录（影响罚款）<b id="fails"></b></span><span>停业记录 <b id="strikes"></b>/3 → 吊销</span></div>
   <div class="reports" id="reports"></div>
 </div>
 <div class="acts">
@@ -121,7 +122,7 @@ input[type=text]{font:inherit;width:100%;padding:10px;border-radius:12px;border:
   <button onclick="act('report')">向 Owner 汇报<small>免费 · 可能换来理解</small></button>
   <button class="end" id="endbtn" onclick="endMonth()">结束本月 ▶</button>
 </div>
-<p class="tip">目标：先做到本市评价第一，再冲全国最佳。资金跌破 −C$20,000 关门；Owner 信任归零被解雇；一年内四次检查不合格吊销执照。每年九月大班毕业，七八月老师想休假。</p>
+<p class="tip">目标：先做到本市评价第一，再冲全国最佳。资金跌破 −C$20,000 关门；Owner 信任归零被解雇；两年内三次被勒令停业吊销执照（小问题只罚款和公示）。每年九月大班毕业，七八月老师想休假。</p>
 </div>
 </main>
 
@@ -233,7 +234,7 @@ function render(){const st=staffing();
   document.getElementById("otrust").textContent=S.owner.trust;document.getElementById("obar").style.width=S.owner.trust+"%";
   const rate=kids()/Math.max(1,capP()+capI());
   document.getElementById("okpi").textContent=`季度 KPI（第${3-((S.m-1)%3)}个月后考核）：本季利润 ${cad(S.qp)} · 入园率 ${Math.round(rate*100)}% · 投诉 ${S.qcomp} 起`;
-  document.getElementById("next").textContent="第"+(Math.ceil(S.m/6)*6)+"个月";document.getElementById("comp").textContent=S.qcomp;
+  document.getElementById("next").textContent="第"+(Math.ceil(S.m/6)*6)+"个月";document.getElementById("comp").textContent=S.qcomp;document.getElementById("fails").textContent=S.fails;document.getElementById("strikes").textContent=S.strikes||0;
   document.getElementById("reports").innerHTML=S.reports.length?"<p>网上公示记录：</p>"+S.reports.slice(-4).map(r=>`<p>· ${r}</p>`).join(""):"<p>公示记录：暂无（保持住！）</p>";
 }
 function ask(title,body,opts){return new Promise(res=>{
@@ -291,7 +292,7 @@ function inspect(reason){if(S.inspMonth===S.m){log(`${reason}：检查员这个�
   const serious=v.some(x=>/三证|超员/.test(x));
   if(!serious&&v.length<=2&&S.fails<3){S.fails++;S.lastFail=S.m;const f=3000*S.fails*D.fine;S.cash-=f;S.rep-=4;S.ps-=4;S.reports.push(`第${S.m}个月 限期整改：${v.join("、")}`);
     log(`${reason}：发现“${v.join("、")}”，责令限期整改，罚款${cad(f)}，处理结果已在网上公示。`,"bad");return}
-  S.fails++;S.lastFail=S.m;S.closed=1;S.rep-=15;S.ps-=15;const lp=Math.round(S.pre*.2),li=Math.round(S.inf*.2);S.pre-=lp;S.inf-=li;S.sn=Math.min(S.sn,S.pre);
+  S.fails++;S.lastFail=S.m;S.strikes=(S.strikes||0)+1;S.lastStrike=S.m;S.closed=1;S.rep-=15;S.ps-=15;const lp=Math.round(S.pre*.2),li=Math.round(S.inf*.2);S.pre-=lp;S.inf-=li;S.sn=Math.min(S.sn,S.pre);
   S.reports.push(`第${S.m}个月 暂停营业整改：${v.join("、")}`);
   log(`${reason}：发现${v.join("、")}，命令暂停营业两周整改。公示一出，${lp+li}个家长直接退园。`,"bad");}
 async function parentEvent(){const r=rnd(1,6);
@@ -429,6 +430,7 @@ async function endMonth(){
     const dt=sc>=3?12:sc===2?6:sc===1?-tpen(5):-tpen(10);O.trust+=dt;
     log(`季度考核：利润${cad(S.qp)}、入园率${Math.round(rate*100)}%、投诉${S.qcomp}起。${O.name}${dt>0?"很满意，信任 +"+dt:"不高兴，信任 "+dt}。`,"owner");S.qp=0;S.qcomp=0}
   if(inc-exp>0)O.trust+=1;O.trust=Math.max(0,Math.min(100,O.trust));S.rep=Math.max(0,Math.min(100,S.rep+d));clampPS();
+  if((S.strikes||0)>0&&S.m-(S.lastStrike||0)>=24){S.strikes--;S.lastStrike=S.m;log("两年没再被停业，一次严重记录从档案里消了。","good")}
   if(S.fails>0&&S.m-(S.lastFail||0)>=12){S.fails--;S.lastFail=S.m;log("一年过去了，licensing 记录里的一条整改记录过期了。","good")}
   if(moy()===4&&S.ccfri){S.fy={pre:S.tp,inf:S.ti};log("新的 CCFRI 年度开始了，学费涨幅额度刷新。","info")}
   if(S.inf>0&&Math.random()<S.inf/24){S.inf--;if(S.pre<capP()){S.pre++;log("一个孩子满三岁，从婴幼儿班升到学龄前班。","info")}else log("一个孩子满三岁该升班，学龄前没位子，家长只好转园。","bad")}
@@ -445,7 +447,7 @@ async function endMonth(){
     else{S.infWait=Math.min(30,S.infWait+di);if(S.m%3===1)log(`已经有${S.infWait}个家长在问有没有婴幼儿班。这附近最缺的就是这个。`,"info")}}
   S.m++;render();
   if(S.cash<-20000)return over("关门大吉",`资金耗尽，房东把${S.kn}的招牌摘了下来。你撑了 ${S.m-1} 个月。`);
-  if(S.fails>=4)return over("执照吊销","第三次不合格。检查员摇着头说：园长，孩子不是数字。");
+  if((S.strikes||0)>=3)return over("执照吊销",`两年内第三次被勒令停业。检查员摇着头说：园长，孩子不是数字。\n\n公示记录：\n${S.reports.slice(-6).join("\n")}`);
   if(O.trust<=0)return over("你被解雇了",`${O.name}说："换个能干的人来吧。"${S.mn}在第 ${S.m-1} 个月收拾了办公桌。`);
   if(S.rep>=95&&kids()>=60)return over("全国最佳幼儿园！",`用了 ${S.m-1} 个月，${S.kn}登上了全国榜首。你终于明白：办幼儿园，真的不简单。`);
   if(S.rep>=85&&kids()>=40&&!S.city){S.city=1;log(`🎉 ${S.kn}成为本市评价第一的幼儿园！下一站：全国。`,"good");render()}
