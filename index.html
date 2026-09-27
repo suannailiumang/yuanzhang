@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>园长大人 · 幼儿园经营模拟</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F5B82E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="园长大人">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#EAF4EC;--card:#FFFFFF;--ink:#22332B;--muted:#5E7066;--line:#CFE0D4;
+  --sun:#F5B82E;--tomato:#E4573D;--sky:#3F86D6;--grass:#3F9E5E;--soft:#F7F1DC;--warn:#FBE3DE}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#182420;--card:#22322B;--ink:#F1F5F2;--muted:#A6B8AE;--line:#35493F;--soft:#2E3A2A;--warn:#4A2A25}}
+:root[data-theme="dark"]{--paper:#182420;--card:#22322B;--ink:#F1F5F2;--muted:#A6B8AE;--line:#35493F;--soft:#2E3A2A;--warn:#4A2A25}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Nunito,"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;font-size:15px;line-height:1.45}
+main{max-width:560px;margin:0 auto;padding:14px 14px 40px;display:grid;grid-template-columns:1fr;gap:0 14px}
+.col{min-width:0}
+@media (min-width:1000px){main{max-width:1280px;grid-template-columns:1.1fr 1fr 1fr;align-items:start}.head{grid-column:1/-1}.col1{position:sticky;top:14px}}
+h1{font-size:26px;font-weight:900;margin:6px 0 0;letter-spacing:-.5px}
+h1 small{display:block;font-size:14px;font-weight:700;color:var(--muted)}
+.stars{font-size:24px;letter-spacing:2px;color:var(--sun);line-height:1;margin:6px 0 2px}
+.rank{font-weight:900;font-size:17px}.rank b{color:var(--tomato)}
+.stat{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+.stat div{background:var(--card);border-radius:14px;padding:8px 4px;text-align:center}
+.stat span{display:block;font-size:11px;color:var(--muted)}.stat strong{font-size:16px;font-weight:900}
+.neg{color:var(--tomato)}.grey{color:var(--sun)}.click{cursor:pointer;text-decoration:underline dotted}
+.card{background:var(--card);border-radius:18px;padding:12px 14px;margin:12px 0}
+.card h2{font-size:14px;margin:0 0 8px;font-weight:900;color:var(--muted)}
+.log{max-height:360px;overflow-y:auto;font-size:14px}
+.log p{margin:0 0 7px;padding-left:10px;border-left:4px solid var(--line)}
+.log p.good{border-color:var(--grass)}.log p.bad{border-color:var(--tomato)}.log p.info{border-color:var(--sky)}.log p.owner{border-color:var(--sun)}
+.room{border:2px dashed var(--line);border-radius:14px;padding:8px 10px;margin:6px 0}
+.room.bad{border-color:var(--tomato)}.room.grey{border-color:var(--sun)}
+.room h3{margin:0 0 4px;font-size:14px}.room .need{font-size:12px;color:var(--muted)}
+.teach{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.teach span{background:var(--soft);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.teach span.exp{background:var(--warn)}
+.teach span.ECEA{background:#DDEBE0;color:#1F4D2E}.teach span.ECE{background:#D9E8FA;color:#163E6B}.teach span.IT{background:#FBE9B8;color:#5A3E00}.teach span.SUB{background:#E7DDF5;color:#3F2560}.teach span.none{background:#EDE7DA;color:#5A4A2A}.teach span.INTERN{background:#E0F0F5;color:#1F4B5A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .teach span.ECEA{background:#254A32;color:#CFEBD8}:root:not([data-theme="light"]) .teach span.ECE{background:#1E3A5C;color:#CFE2FA}:root:not([data-theme="light"]) .teach span.IT{background:#5A4410;color:#FBE9B8}:root:not([data-theme="light"]) .teach span.SUB{background:#3B2A55;color:#E7DDF5}}
+.two{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--sun)}
+.reports{font-size:13px;color:var(--muted);margin:6px 0 0}.reports p{margin:2px 0}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{font:inherit;font-weight:800;border:0;border-radius:14px;padding:10px 8px;background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--line)}
+button:active{transform:translateY(2px);box-shadow:none}button:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+button small{display:block;font-weight:600;color:var(--muted);font-size:11px}button:disabled{opacity:.45;cursor:not-allowed}
+.end{grid-column:1/-1;background:var(--sun);color:#3A2A00;font-size:17px;padding:13px}
+.mini{padding:6px 10px;font-size:13px}
+.tuition{display:flex;align-items:center;justify-content:space-between;gap:8px}.tuition button{padding:7px 12px}
+.over{position:fixed;inset:0;background:rgba(20,30,25,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:9}
+.over.show{display:flex}.over .card{max-width:440px;width:100%;max-height:90vh;overflow-y:auto}
+.over h2{font-size:19px;color:var(--ink)}.over .opts{display:grid;gap:8px;margin-top:12px}
+.tip{font-size:12px;color:var(--muted);margin:6px 0 0}
+input[type=text]{font:inherit;width:100%;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink);margin:4px 0 10px}
+.legend{font-size:11px;color:var(--muted);margin-top:8px}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin:0 3px 0 8px;vertical-align:middle}
+</style>
+</head>
+<body>
+<main>
+<div class="head">
+<h1><span id="kname">幼儿园</span> <small><span id="mname">园长</span> · 第<span id="month">1</span>个月 · <span id="moy"></span> · <span id="diff"></span></small></h1>
+<div class="stars" id="stars"></div>
+<div class="rank" id="rank"></div>
+<div class="stat">
+  <div><span>资金</span><strong id="cash"></strong></div>
+  <div><span>学龄前</span><strong id="pre"></strong></div>
+  <div><span>婴幼儿</span><strong id="inf"></strong></div>
+  <div><span>家长满意</span><strong id="ps"></strong></div>
+  <div><span>配置（点我）</span><strong id="status" class="click" onclick="showIssues()"></strong></div>
+</div>
+<p class="tip" id="loanline" style="margin:-4px 0 6px"></p>
+</div>
+
+<div class="col col1">
+<div class="card"><h2>园长日志</h2><div class="log" id="log"></div></div>
+<div class="card">
+  <div class="tuition"><span>学龄前学费 <strong id="tuit"></strong>/月</span><span><button onclick="fee('pre',-50)">−50</button> <button onclick="fee('pre',50)">+50</button></span></div>
+  <div class="tuition" style="margin-top:6px"><span>婴幼儿学费 <strong id="ituit"></strong>/月</span><span><button onclick="fee('inf',-50)">−50</button> <button onclick="fee('inf',50)">+50</button></span></div>
+  <p class="tip" id="oop"></p>
+</div>
+</div>
+
+<div class="col col2">
+<div class="card"><h2>教室与排班（点班名改名/改大小，点老师换班）</h2><div id="rooms"></div>
+<div style="margin-top:8px"><b style="font-size:13px">机动 / 未排班</b><div class="teach" id="pool"></div></div>
+<div class="legend"><i style="background:#DDEBE0"></i>ECEA <i style="background:#D9E8FA"></i>ECE <i style="background:#FBE9B8"></i>三证 IT/SN <i style="background:#E7DDF5"></i>代课 <i style="background:#EDE7DA"></i>RA <i style="background:#E0F0F5"></i>实习生 <i style="background:#FBE3DE"></i>过期/病假</div>
+<div style="margin-top:8px;display:flex;gap:8px"><button class="mini" onclick="autoAssign();log('重新自动排了班。','info');render()">自动排班</button><button class="mini" onclick="act('brk')" id="brkbtn"></button><button class="mini" onclick="act('clean')" id="cleanbtn"></button></div>
+<p class="tip">工资含 12% 雇主税费（CPP/EI/WorkSafe）。ECE 可以顶助理的位子并算进师生比。整洁度每月随孩子人数下降，RA、实习生、ECEA 和清洁公司能拉回来；低于 20 算卫生不达标。BC 规定按班算：学龄前班（最多 25 人）1–8 人 1 ECE，9–16 人加 1 助理，17–25 人加 2 助理；婴幼儿班（最多 12 人）1–4 人 1 三证，5–8 人加 1 ECE，9–12 人再加 1 助理。ECEA 只能当助理；ECE、三证可以往下顶助理。工资按时薪，每天 8 小时、每月 21 天；病假发一半，休假不发。老师带班攒经验会慢慢升级，培训加速。</p></div>
+<div class="card"><h2>政府补贴（ChildCareBC）</h2><div id="gov" style="font-size:13px"></div>
+<p class="tip">加入 CCFRI：学龄前每个孩子每月约 C$336、婴幼儿约 C$520 运营补贴，政府替家长付 C$545（学龄前）/ C$900（婴幼儿）学费；ECE 和三证老师每工作小时另有 C$6 工资补贴（ECE-WE）。代价：学费有上限，每年只能涨一点点。</p></div>
+</div>
+
+<div class="col col3">
+<div class="card"><h2>Owner</h2>
+  <div class="two"><span id="oname"></span><span>信任 <b id="otrust"></b></span></div>
+  <div class="bar"><i id="obar"></i></div>
+  <p class="tip" id="okpi"></p>
+</div>
+<div class="card"><h2>Licensing Officer</h2>
+  <div class="two"><span>下次定期检查：<b id="next"></b></span><span>本季投诉 <b id="comp"></b></span></div>
+  <div class="reports" id="reports"></div>
+</div>
+<div class="acts">
+  <button onclick="act('ad')">招生宣传<small>C$1,500 · 上门的家长更多</small></button>
+  <button onclick="act('hire')">招聘老师<small>C$800 中介费 · 三个候选人</small></button>
+  <button onclick="act('train')">教师培训<small>C$2,500 · 最弱老师升级 + 续期时数</small></button>
+  <button onclick="act('cert')">证书续期<small>C$300 · 最快到期的老师，需已培训</small></button>
+  <button onclick="act('room')">扩建学龄前班<small>C$35,000 · +25 位</small></button>
+  <button onclick="act('iroom')">扩建婴幼儿班<small>C$40,000 · +12 位，需三证老师</small></button>
+  <button onclick="act('toys')">添置教具<small>C$4,000 · 孩子开心家长晒图</small></button>
+  <button onclick="act('sub')">请代课老师<small>三证 C$38/h · ECE C$30 · ECEA C$24，月底自动解约</small></button>
+  <button onclick="act('party')">教师团建<small>C$1,200 · 士气与体力回血</small></button>
+  <button onclick="act('meet')">家长会<small>C$400 · 家长满意度回升</small></button>
+  <button onclick="act('ccfri')" id="ccbtn">加入 CCFRI<small>免费 · 拿补贴，受学费管制</small></button>
+  <button onclick="act('report')">向 Owner 汇报<small>免费 · 可能换来理解</small></button>
+  <button class="end" id="endbtn" onclick="endMonth()">结束本月 ▶</button>
+</div>
+<p class="tip">目标：先做到本市评价第一，再冲全国最佳。资金跌破 −C$20,000 关门；Owner 信任归零被解雇；一年内四次检查不合格吊销执照。每年九月大班毕业，七八月老师想休假。</p>
+</div>
+</main>
+
+<div class="over" id="over"><div class="card"><h2 id="ot"></h2><p id="ob" style="white-space:pre-line"></p><div class="opts" id="oo"></div></div></div>
+<div class="over show" id="setup"><div class="card">
+  <h2>新园开张</h2>
+  <label>幼儿园名称</label><input type="text" id="inK" value="小星星幼儿园" maxlength="16">
+  <label>园长姓名</label><input type="text" id="inM" value="雷园长" maxlength="12">
+  <p class="tip">执照批了 25 个位子。难度影响 Owner 的耐心、罚款力度和灰色地带被抓的概率；硬核难度的 C$50,000 启动资金是银行贷款。</p>
+  <div class="opts">
+    <button class="end" onclick="setup('easy')">轻松 · 先熟悉规则</button>
+    <button class="end" onclick="setup('normal')">标准 · 真实大温</button>
+    <button class="end" onclick="setup('hard')">硬核 · 我就是园长</button>
+  </div>
+</div></div>
+
+<script>
+const names=["王老师","李老师","张老师","陈老师","刘老师","赵老师","周老师","吴老师","黄老师","林老师","何老师","郭老师","孙老师","马老师","Emily","Sarah","Priya","Jasmine","Maria","Grace"];
+const OT=[{name:"陈总",type:"厚道",desc:"逢年过节给老师送 gift card，很少插手，但也看报表。"},
+ {name:"林总",type:"精明",desc:"KPI 抓得紧，喜欢在招聘上动脑筋，你懂的。"},
+ {name:"王老板",type:"关系户",desc:"朋友多，亲戚也多，都想往幼儿园里放。"}];
+const DIFF={easy:{trust:75,rep:50,catch:.3,fine:.5,tp:.6,dem:2,name:"轻松",loan:0,ob:.6,bail:1,meetQ:0},normal:{trust:60,rep:45,catch:.55,fine:1,tp:1,dem:0,name:"标准",loan:0,ob:1,bail:1,meetQ:0},hard:{trust:50,rep:40,catch:.75,fine:1.3,tp:1.3,dem:-1,name:"硬核",loan:50000,ob:1.8,bail:0,meetQ:1}};
+const BENCH={pre:1525,inf:2050},RED={pre:545,inf:900},LIM={pre:38,inf:54},LOANPAY=967,DAYS=21;
+let D=DIFF.normal;
+const S={kn:"小星星幼儿园",mn:"园长",m:1,cash:50000,loan:0,rep:45,ps:60,pre:12,inf:0,sn:0,rooms:[],lic:25,oncall:[],gapDays:0,cleanSvc:0,toys:1,tp:1260,ti:1800,ccfri:1,fy:{pre:1260,inf:1800},heat:0,fails:0,closed:0,qp:0,qcomp:0,reports:[],city:0,infWait:0,rent:5000,brk:{min:30,paid:0},
+  owner:{...OT[Math.floor(Math.random()*3)],trust:60},t:[]};
+const preRooms=()=>S.rooms.filter(r=>r.type==="pre"),infRooms=()=>S.rooms.filter(r=>r.type==="inf");
+const capP=()=>preRooms().reduce((p,r)=>p+r.cap,0),capI=()=>infRooms().reduce((p,r)=>p+r.cap,0),kids=()=>S.pre+S.inf;
+const moy=()=>((S.m-1)%12)+1,flu=()=>[11,12,1,2,3].includes(moy()),winter=()=>[11,12,1,2].includes(moy()),summer=()=>moy()===7||moy()===8;
+const MN=["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"];
+const cad=n=>(n<0?"−":"")+"C$"+Math.abs(Math.round(n)).toLocaleString();
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const valid=x=>(x.cert==="none"||x.cert==="INTERN"||x.exp>0)&&!x.away&&!x.sick;
+const maxSt=x=>x.age<30?100:x.age<40?90:x.age<50?78:65;
+const oop=k=>S.ccfri?Math.max(200,(k==="pre"?S.tp:S.ti)-RED[k]):(k==="pre"?S.tp:S.ti);
+const clampPS=()=>S.ps=Math.max(0,Math.min(100,S.ps));
+const hoursPaid=()=>S.brk.paid?8:8-S.brk.min/60;
+const monthly=x=>Math.round(x.rate*hoursPaid()*DAYS*(x.sick?.5:x.away?0:1));
+const isLead=x=>x.cert==="ECE"||x.cert==="IT"||(x.cert==="SUB"&&x.subCert!=="ECEA");
+const cname=c=>c==="IT"?"三证":c==="SUB"?"代课":c==="none"?"RA":c==="INTERN"?"实习生":c;const tname=x=>x.cert==="SUB"?"代课"+cname(x.subCert||"ECE"):cname(x.cert);
+let logs=[];
+function log(t,c="info"){logs.unshift({t,c});if(logs.length>80)logs.pop()}
+// ---- rooms & staffing ----
+function roomName(i){const r=S.rooms[i];if(r.name)return r.name;const n=S.rooms.filter((x,j)=>x.type===r.type&&j<=i).length;return (r.type==="pre"?"学龄前":"婴幼儿")+n+"班"}
+const usedCap=()=>S.rooms.reduce((p,r)=>p+r.cap,0);
+function distribute(){const out=S.rooms.map(r=>0);for(const type of ["pre","inf"]){const idx=S.rooms.map((r,i)=>r.type===type?i:-1).filter(i=>i>=0);let n=type==="pre"?S.pre:S.inf;const tot=idx.reduce((p,i)=>p+S.rooms[i].cap,0);
+    idx.forEach(i=>{const k=Math.min(S.rooms[i].cap,Math.round(n*S.rooms[i].cap/tot));out[i]=k});let rem=n-idx.reduce((p,i)=>p+out[i],0);
+    for(const i of idx){if(rem===0)break;const add=Math.min(rem,S.rooms[i].cap-out[i]);out[i]+=add;rem-=add}if(rem>0)out[idx[idx.length-1]]+=rem}return out}
+function checkRoom(i,k){const r=S.rooms[i],st=S.t.filter(x=>x.room===i&&valid(x));const ec=x=>x.cert==="SUB"?(x.subCert||"ECE"):x.cert==="INTERN"?"ECEA":x.cert;const it=st.filter(x=>ec(x)==="IT").length,ece=st.filter(x=>ec(x)==="ECE").length,ecea=st.filter(x=>ec(x)==="ECEA").length;
+  const iss=[];let grey=0;if(k===0)return {need:"空班",iss,grey};
+  if(st.length===0)iss.push("班上没有老师");
+  if((r.clean??80)<20)iss.push("卫生不达标");
+  if(k>r.cap)iss.push("超员");
+  if(r.type==="pre"){const a=k<=8?0:k<=16?1:2;const need=`需 1 ECE${a?" + "+a+" 助理":""}`;
+    if(it+ece<1)iss.push("缺 ECE 带班");else{const rest=it+ece-1+ecea;if(rest<a)iss.push(`缺 ${a-rest} 助理`)}return {need,iss,grey}}
+  const e=k>=5?1:0,a=k>=9?1:0;const need=`需 1 三证${e?" + 1 ECE":""}${a?" + 1 助理":""}`;
+  let lead=0;if(it>=1)lead=1;else if(ece>=1){lead=1;grey=1}else{iss.push("缺三证老师带班");return {need,iss,grey}}
+  let pool=it+ece-1;if(pool<e){iss.push("缺 ECE");pool=0}else pool-=e;pool+=ecea;if(pool<a)iss.push("缺 1 助理");return {need,iss,grey}}
+function staffing(){const d=distribute();const rows=S.rooms.map((r,i)=>({i,k:d[i],...checkRoom(i,d[i])}));
+  const iss=[];rows.forEach(r=>r.iss.forEach(x=>iss.push(roomName(r.i)+"："+x)));const greys=rows.filter(r=>r.grey).map(r=>roomName(r.i)+"：婴幼儿班由 ECE 顶班，没有三证老师");
+  const IT=S.t.filter(x=>valid(x)&&(x.cert==="IT"||x.subCert==="IT")).length;const snGap=Math.max(0,S.sn-IT*2);if(snGap)greys.push(`特殊需要 ${S.sn} 人，SN 老师只有 ${IT} 位（每人最多带 2 个）：这 ${snGap} 个孩子拿不到支持补贴，家长会不满`);
+  S.t.forEach(x=>{if(x.cert!=="none"&&x.cert!=="INTERN"&&x.cert!=="SUB"&&x.exp<=0&&!x.away&&!x.sick)iss.push(x.n+"：证书过期仍在带班")});
+  return {rows,iss,greys,IT,snGap,state:iss.length?"违规":greys.length?"灰色":"合规"}}
+function violations(atInsp){const st=staffing();const v=[...st.iss];if(atInsp&&Math.random()<D.catch)v.push(...st.greys.filter(x=>!x.includes("特殊需要")));if(atInsp&&S.gapDays>0&&Math.random()<S.gapDays/21)v.push("检查当天有老师病假没找代课，班上人手不够");return v}
+function autoAssign(){S.t.forEach(x=>{if(x.cert!=="SUB")x.room=-1});const d=distribute();const free=()=>S.t.filter(x=>x.room===-1&&valid(x)&&x.cert!=="SUB");
+  const take=(pred)=>{const c=free().filter(pred).sort((a,b)=>b.s-a.s)[0];return c};const anyA=x=>x.cert!=="none";
+  const order=S.rooms.map((r,i)=>i).sort((a,b)=>(S.rooms[a].type==="inf"?0:1)-(S.rooms[b].type==="inf"?0:1));
+  for(const i of order){const r=S.rooms[i],k=d[i];if(!k)continue;
+    if(r.type==="inf"){let l=take(x=>x.cert==="IT")||take(x=>x.cert==="ECE");if(l)l.room=i;if(k>=5){const e=take(x=>x.cert==="ECE")||take(x=>x.cert==="IT");if(e)e.room=i}if(k>=9){const a=take(x=>x.cert==="ECEA"||x.cert==="INTERN")||take(anyA);if(a)a.room=i}}
+    else{let l=take(x=>x.cert==="ECE")||take(x=>x.cert==="IT");if(l)l.room=i;const na=k<=8?0:k<=16?1:2;for(let j=0;j<na;j++){const a=take(x=>x.cert==="ECEA"||x.cert==="INTERN")||take(anyA);if(a)a.room=i}}}
+  for(const x of free().filter(y=>y.cert==="none")){const dirtiest=S.rooms.map((r,i)=>i).sort((a,b)=>(S.rooms[a].clean??80)-(S.rooms[b].clean??80))[0];if(dirtiest>=0)x.room=dirtiest}
+  free().forEach(x=>{x.room=-1})}
+function showIssues(){const st=staffing();ask("配置详情 · "+st.state,[...st.iss.map(x=>"⛔ "+x),...st.greys.map(x=>"⚠️ "+x)].join("\n")||"各班配置都符合规定。",[["知道了",null]])}
+async function editRoom(i){const r=S.rooms[i],free=S.lic-usedCap(),mn=r.type==="pre"?8:4,mx=r.type==="pre"?25:12;
+  await ask(`${roomName(i)} · ${r.cap} 位`,`执照总位子 ${S.lic}，已分配 ${usedCap()}，还能分 ${free}。学龄前班 8–25 人，婴幼儿班 4–12 人。`,
+    [["改名",()=>{const n=prompt("给这个班起个名字（最多 8 个字）",roomName(i));if(n&&n.trim())r.name=n.trim().slice(0,8)}],
+     [`扩大 +2（还能分 ${free}）`,()=>{if(free>=2&&r.cap+2<=mx){r.cap+=2;log(`${roomName(i)}改成 ${r.cap} 位。`,"info")}else log("执照位子不够，或已到该班上限。","bad")}],
+     ["缩小 −2",()=>{if(r.cap-2>=mn){r.cap-=2;log(`${roomName(i)}改成 ${r.cap} 位。`,"info")}else log("已经是最小班了。","bad")}],
+     ["算了",null]]);render()}
+async function moveTeacher(idx){const x=S.t[idx];const opts=S.rooms.map((r,i)=>[`${roomName(i)}（${r.cap} 位）`,()=>{x.room=i;log(`${x.n}调到了${roomName(i)}。`,"info")}]);
+  opts.push(["机动 / 不带班",()=>{x.room=-1;log(`${x.n}改为机动。`,"info")}]);if(x.cert==="SUB")opts.push(["解约（代课老师走人）",()=>{S.t=S.t.filter(y=>y!==x);log(`代课老师${x.n}结束了合同。需要时还能再叫。`,"info")}]);else opts.push([`解雇（付两周遣散费 ${cad(monthly(x)/2)}）`,()=>{S.cash-=monthly(x)/2;S.t=S.t.filter(y=>y!==x);S.t.forEach(y=>y.mo-=4);S.ps-=2;log(`${x.n}被解雇了。其他老师一下午没说话。`,"bad")}]);
+  await ask(`${x.n} · ${cname(x.cert)} · C$${x.rate}/h`,`${x.age}岁，${"●".repeat(x.s)}${"○".repeat(5-x.s)}，士气 ${x.mo}，体力 ${x.st}。月薪约 ${cad(monthly(x))}。安排到：`,opts);render()}
+// ---- render ----
+function chip(x,i){return `<span class="${valid(x)?x.cert:"exp"}" onclick="moveTeacher(${i})">${x.n} ${x.age}岁 ${tname(x)} C$${x.rate}/h${x.cert!=="none"&&x.cert!=="SUB"&&x.cert!=="INTERN"?(x.exp>0?" 剩"+x.exp+"月":" 已过期"):x.cert==="INTERN"?" 还剩"+x.left+"月":""}${x.sick?" 🤒长病假"+x.sick+"月":x.away?" 休假/回炉":x.sickDays?" 🤧上月病"+x.sickDays+"天":""} ${"●".repeat(x.s)}${"○".repeat(5-x.s)} 士气${x.mo} 体力${x.st}${x.s<5?" 经验"+Math.round(x.xp||0)+"%":""}${x.trained?" ✓":""}${x.nep?" 关系户":""}${x.ref?" 内推":""}</span>`}
+function render(){const st=staffing();
+  document.getElementById("kname").textContent=S.kn;document.getElementById("mname").textContent=S.mn;document.getElementById("diff").textContent=D.name+"难度";
+  document.getElementById("month").textContent=S.m;document.getElementById("moy").textContent=MN[moy()-1]+(flu()?" 🤧流感季":summer()?" ☀️暑假":"");
+  const sr=Math.max(.5,Math.round(S.rep/10)/2);
+  document.getElementById("stars").textContent="★".repeat(Math.floor(sr))+(sr%1?"½":"")+"☆".repeat(5-Math.ceil(sr));
+  document.getElementById("rank").innerHTML=`本市排名 第<b>${Math.max(1,Math.round(60-S.rep*.6))}</b>名 · 口碑 ${Math.round(S.rep)}/100`;
+  const c=document.getElementById("cash");c.textContent=cad(S.cash);c.className=S.cash<0?"neg":"";
+  document.getElementById("loanline").textContent=S.loan>0?`银行贷款余额 ${cad(S.loan)}，每月还 ${cad(LOANPAY)}（5 年，年息 6%）`:"";
+  document.getElementById("pre").textContent=S.pre+"/"+capP()+(S.sn?" (SN"+S.sn+")":"");
+  document.getElementById("inf").textContent=capI()?S.inf+"/"+capI():"无班"+(S.infWait?" 排队"+S.infWait:"");
+  const pe=document.getElementById("ps");pe.textContent=Math.round(S.ps);pe.className=S.ps<40?"neg":"";
+  const se=document.getElementById("status");se.textContent=st.state;se.className="click "+(st.state==="违规"?"neg":st.state==="灰色"?"grey":"");se.title=[...st.iss,...st.greys].join("\n")||"合规";
+  document.getElementById("rooms").innerHTML=st.rows.map(r=>`<div class="room ${r.iss.length?"bad":r.grey?"grey":""}"><h3 class="click" onclick="editRoom(${r.i})">${roomName(r.i)} · ${r.k}/${S.rooms[r.i].cap} 人</h3><div class="need">${r.need} · 整洁 <b class="${(S.rooms[r.i].clean??80)<30?"neg":(S.rooms[r.i].clean??80)<50?"grey":""}">${Math.round(S.rooms[r.i].clean??80)}</b></div>${r.iss.length?`<div class="need neg">${r.iss.join("，")}</div>`:r.grey?`<div class="need grey">灰色：ECE 顶班</div>`:""}<div class="teach">${S.t.map((x,i)=>x.room===r.i?chip(x,i):"").join("")||"<span style='background:none;color:var(--muted)'>没有老师</span>"}</div></div>`).join("");
+  document.getElementById("pool").innerHTML=S.t.map((x,i)=>x.room===-1||x.room==null?chip(x,i):"").join("")||"<span style='background:none;color:var(--muted)'>（无）</span>";
+  document.getElementById("cleanbtn").innerHTML=S.cleanSvc?"清洁公司：已订（C$800/月，点击取消）":"清洁公司：未订（C$800/月）";
+  document.getElementById("brkbtn").innerHTML=`休息制度：${S.brk.min} 分钟${S.brk.paid?"带薪":"不带薪"}（点击更改）`;
+  const nE=S.t.filter(x=>valid(x)&&x.cert!=="ECEA"&&x.cert!=="none").length,we=Math.round(6*hoursPaid()*DAYS);
+  document.getElementById("gov").innerHTML=S.ccfri?`已加入 CCFRI。本月预计：运营补贴 ${cad(S.pre*336+S.inf*520)} · 政府代付学费 ${cad(S.pre*RED.pre+S.inf*RED.inf)} · ECE-WE 工资补贴 ${cad(nE*we)}（${nE} 位 × C$6/h）<br>学费上限 C$${BENCH.pre.toLocaleString()} / C$${BENCH.inf.toLocaleString()}，本年度最多再涨 C$${Math.max(0,S.fy.pre+LIM.pre-S.tp)} / C$${Math.max(0,S.fy.inf+LIM.inf-S.ti)}`:"未加入。学费随便定，但家长要付全款，一分补贴也没有。大温同行的中位学费是 C$1,260 / C$1,800。";
+  document.getElementById("tuit").textContent=cad(S.tp);document.getElementById("ituit").textContent=cad(S.ti);
+  document.getElementById("oop").textContent=`家长实付：学龄前 ${cad(oop("pre"))} · 婴幼儿 ${cad(oop("inf"))}（家长看的是这个数）`;
+  document.getElementById("ccbtn").innerHTML=S.ccfri?"退出 CCFRI<small>学费自由，补贴全无，家长会跑</small>":"加入 CCFRI<small>免费 · 拿补贴，受学费管制</small>";
+  document.getElementById("log").innerHTML=logs.map(l=>`<p class="${l.c}">${l.t}</p>`).join("");
+  document.getElementById("oname").textContent=S.owner.name+"（"+S.owner.type+"型）";
+  document.getElementById("otrust").textContent=S.owner.trust;document.getElementById("obar").style.width=S.owner.trust+"%";
+  const rate=kids()/Math.max(1,capP()+capI());
+  document.getElementById("okpi").textContent=`季度 KPI（第${3-((S.m-1)%3)}个月后考核）：本季利润 ${cad(S.qp)} · 入园率 ${Math.round(rate*100)}% · 投诉 ${S.qcomp} 起`;
+  document.getElementById("next").textContent="第"+(Math.ceil(S.m/6)*6)+"个月";document.getElementById("comp").textContent=S.qcomp;
+  document.getElementById("reports").innerHTML=S.reports.length?"<p>网上公示记录：</p>"+S.reports.slice(-4).map(r=>`<p>· ${r}</p>`).join(""):"<p>公示记录：暂无（保持住！）</p>";
+}
+function ask(title,body,opts){return new Promise(res=>{
+  document.getElementById("ot").textContent=title;document.getElementById("ob").textContent=body;
+  const o=document.getElementById("oo");o.innerHTML="";
+  opts.forEach(([label,fn])=>{const b=document.createElement("button");b.className="end";b.textContent=label;
+    b.onclick=()=>{document.getElementById("over").classList.remove("show");fn&&fn();res()};o.appendChild(b)});
+  document.getElementById("over").classList.add("show");})}
+function over(t,b){document.getElementById("endbtn").disabled=true;ask(t,b,[["再开一家",()=>location.reload()]]);render();return true}
+function fee(k,d){const cur=k==="pre"?S.tp:S.ti,nv=Math.max(600,Math.min(3200,cur+d));
+  if(S.ccfri&&d>0){if(nv>BENCH[k]){log("CCFRI 规定：学费不能超过大温地区上限。","bad");render();return}
+    if(nv>S.fy[k]+LIM[k]){log(`CCFRI 规定：本年度学费最多只能涨 C$${LIM[k]}。想多涨要向政府申请例外，理由得硬。`,"bad");render();return}}
+  if(k==="pre")S.tp=nv;else S.ti=nv;render()}
+function pay(n){if(S.cash-n<-20000){log("账上钱不够了，先想办法赚钱吧。","bad");render();return false}S.cash-=n;return true}
+function newTeacher(o={}){const cert=o.cert??pick(["ECEA","ECE","ECE","IT"]);const age=o.age??rnd(22,58);
+  const s=o.s??Math.max(1,Math.min(5,rnd(1,2)+Math.floor((age-22)/9)));
+  const rate=o.rate??(cert==="IT"?28+s*1.5:cert==="ECE"?24+s*1.2:cert==="SUB"?30:cert==="none"?19:cert==="INTERN"?0:20+s*.8)+(cert==="SUB"?0:rnd(0,10)/10);
+  const t={n:pick(names),age,s,xp:0,mo:rnd(65,90),rate:Math.round(rate*2)/2,cert,exp:s===1?12:rnd(8,50),room:-1,...o};t.st=t.st??maxSt(t);return t}
+function place(t){const d=distribute();let best=-1,bs=0;S.rooms.forEach((r,i)=>{const k=d[i];if(!k)return;const c=checkRoom(i,k);const sc=c.iss.length*2+c.grey;if(sc>bs){bs=sc;best=i}});
+  if(best>=0){t.room=best;const c=checkRoom(best,d[best]);if(c.iss.length||c.grey){t.room=-1;return "先放在机动，点她排班"}return "已排到"+roomName(best)}return "先放在机动"}
+async function act(a){
+  if(a==="ad"&&pay(1500)){S.heat+=1;log("发了传单、开了公众号，家长群里开始有人问价了。")}
+  if(a==="hire"&&pay(800)){const cs=[newTeacher({cert:"ECEA"}),newTeacher({cert:"ECE"}),newTeacher({cert:"IT"}),newTeacher({cert:"none",rate:19,s:1})];
+    await ask("中介推了四位候选人","三证老师不好找，时薪也硬。RA（Responsible Adult，无证）不算师生比，只能搞整洁、打下手，但便宜。选一位：",[...cs.map(t=>[`${t.n} ${t.age}岁 · ${cname(t.cert)} · ${"●".repeat(t.s)} · C$${t.rate}/h（约 ${cad(monthly(t))}/月）${t.s===1?"（新人，证书一年）":""}`,
+      ()=>{S.t.push(t);const w=place(t);log(`${t.n}入职了，${t.age}岁，${cname(t.cert)}，时薪 C$${t.rate}，证书还有${t.exp}个月到期。${w}。`,"good")}]),["都不合适",()=>log("三位都没看上，中介费打了水漂。","bad")]])}
+  if(a==="train"){const el=S.t.filter(x=>x.cert!=="SUB");if(!el.length)log("没有老师可以培训。","bad");else if(pay(2500)){const w=el.reduce((p,x)=>x.s<p.s?x:p);w.trained=1;
+    if(w.s<5){w.xp=(w.xp||0)+60;w.mo=Math.min(100,w.mo+5);if(w.xp>=100){w.s++;w.xp-=100;log(`${w.n}培训完升了一级，续期时数也攒够了。`,"good")}else log(`${w.n}参加了周末培训，学到不少，离升级还差一点。续期时数攒够了。`,"good")}else log(`${w.n}已经是满级老师了，不过培训时数记上了。`,"info")}}
+  if(a==="cert"){const c=S.t.filter(x=>x.cert!=="none"&&x.cert!=="SUB").sort((a,b)=>a.exp-b.exp)[0];
+    if(!c)log("没有可以续期的证书。","bad");else if(!c.trained)log(`${c.n}还没攒够培训时数，续不了期。先安排培训。`,"bad");
+    else if(pay(300)){c.exp=60;c.trained=0;log(`${c.n}的证书在 ECE Registry 续期了，五年内不用操心。`,"good")}}
+  if(a==="room"&&pay(35000)){S.lic+=25;S.rooms.push({type:"pre",cap:25,clean:100});log("新的学龄前教室装修好了。记得配一位 ECE 带班。","good")}
+  if(a==="iroom"&&pay(40000)){S.lic+=12;S.rooms.push({type:"inf",cap:12,clean:100});log("婴幼儿班装好了：矮床、尿布台、软地垫。没有三证老师可不能开班。","good")}
+  if(a==="sub"){await ask("请代课老师","中介随叫随到，按月计费，能力看运气。合同到月底，不解约就继续留着。",
+    [["三证代课 C$38/h",()=>{const t=newTeacher({cert:"SUB",subCert:"IT",s:rnd(1,5),age:rnd(24,55),rate:38});S.t.push(t);log(`三证代课${t.n}到了，${"●".repeat(t.s)}，在机动位。`,"info")}],
+     ["ECE 代课 C$30/h",()=>{const t=newTeacher({cert:"SUB",subCert:"ECE",s:rnd(1,5),age:rnd(24,55),rate:30});S.t.push(t);log(`ECE 代课${t.n}到了，${"●".repeat(t.s)}，在机动位。`,"info")}],
+     ["ECEA 代课 C$24/h",()=>{const t=newTeacher({cert:"SUB",subCert:"ECEA",s:rnd(1,5),age:rnd(24,55),rate:24});S.t.push(t);log(`ECEA 代课${t.n}到了，${"●".repeat(t.s)}，在机动位。`,"info")}],["算了",null]])}
+  if(a==="clean"){S.cleanSvc=S.cleanSvc?0:1;log(S.cleanSvc?"订了清洁公司，每周三来两个人擦一遍。":"取消了清洁公司。老师们对视了一眼。","info")}
+  if(a==="toys"){if(S.toys>=5)log("教具已经堆到走廊了，再买放不下。","bad");else if(pay(4000)){S.toys++;S.ps+=2;log("新到一批蒙氏教具和积木，孩子们排队抢。","good")}}
+  if(a==="party"&&pay(1200)){S.t.forEach(x=>{x.mo=Math.min(100,x.mo+15);x.st=Math.min(maxSt(x),x.st+15)});log("老师们去吃了火锅，第二天笑容明显多了。","good")}
+  if(a==="meet"){if(S.met||(D.meetQ&&S.metQ===Math.ceil(S.m/3)))log(D.meetQ?"硬核难度下家长会一个季度只能开一次，家长没那么多耐心。":"这个月已经开过家长会了。","bad");else if(pay(400)){S.met=1;S.metQ=Math.ceil(S.m/3);S.ps+=6;log(`${S.mn}开了家长会，讲了课程安排，回答了四十分钟“我家孩子今天吃了几口饭”。家长满意度回升。`,"good")}}
+  if(a==="brk"){const O=S.owner;await ask("休息制度（Owner 拍板）","BC 劳动法：工作 5 小时以上要给 30 分钟休息，法律没说必须带薪。带薪是福利，一小时不带薪省钱但老师中午没地方去。",
+    [["30 分钟不带薪（标准）",()=>{S.brk={min:30,paid:0};log("休息制度：30 分钟不带薪。老师们说，行吧，跟别家一样。","owner")}],
+     ["30 分钟带薪（福利）",()=>{if(O.type==="精明"){O.trust-=3;log(`${O.name}："带薪休息？你当我开慈善的？"驳回了。`,"owner")}else{S.brk={min:30,paid:1};log(`${O.name}批了带薪休息。老师群里刷了一排感谢。`,"owner")}}],
+     ["60 分钟不带薪（省钱）",()=>{if(O.type==="厚道"){log(`${O.name}："别折腾老师，就 30 分钟。"`,"owner")}else{S.brk={min:60,paid:0};O.trust+=3;log("休息制度改成一小时不带薪。工资省了，老师们中午在车里刷手机。","owner")}}]])}
+  if(a==="ccfri"){if(S.ccfri){await ask("退出 CCFRI？","退出后学费想定多少定多少，但所有补贴停发，家长要付全款，一部分会转去隔壁拿补贴的园。",
+      [["退出",()=>{S.ccfri=0;const l=Math.round(S.pre*.25),li=Math.round(S.inf*.25);S.pre-=l;S.inf-=li;S.sn=Math.min(S.sn,S.pre);S.ps-=10;log(`退出了 CCFRI。${l+li}个家长算了算账，转园了。`,"bad")}],["算了",null]])}
+    else{if(S.tp>BENCH.pre||S.ti>BENCH.inf)log(`加入 CCFRI 要求学费不超过 C$${BENCH.pre.toLocaleString()} / C$${BENCH.inf.toLocaleString()}。先降学费。`,"bad");
+      else{S.ccfri=1;S.fy={pre:S.tp,inf:S.ti};S.ps+=8;log("加入了 CCFRI。政府代付一部分学费，家长群里瞬间安静了——然后开始有人问还有没有位子。","good")}}}
+  if(a==="report"){if(S.reported)log("这个月已经汇报过了，再去要挨说了。","bad");else{S.reported=1;const ok=Math.random()<(S.owner.type==="厚道"?.7:.4);
+    S.owner.trust=Math.max(0,Math.min(100,S.owner.trust+(ok?6:-3)));log(ok?`${S.owner.name}听完汇报点了点头："辛苦了，我知道不容易。"`:`${S.owner.name}听了一半就看手机了："别跟我讲过程，讲结果。"`,"owner")}}
+  clampPS();render();
+}
+function inspect(reason){if(S.inspMonth===S.m){log(`${reason}：检查员这个月已经来过一次了，电话里说“下次再说”。`,"info");return}S.inspMonth=S.m;const v=violations(true);
+  if(!v.length){S.rep+=2;if(reason==="定期检查"&&S.fails>0){S.fails--;log(`${reason}：全部通过。之前的整改记录销了一条。`,"good")}else log(`${reason}：全部通过。检查员说这是她本月见过最像样的一家。`,"good");return}
+  const serious=v.some(x=>/三证|超员/.test(x));
+  if(!serious&&v.length<=2&&S.fails<3){S.fails++;S.lastFail=S.m;const f=3000*S.fails*D.fine;S.cash-=f;S.rep-=4;S.ps-=4;S.reports.push(`第${S.m}个月 限期整改：${v.join("、")}`);
+    log(`${reason}：发现“${v.join("、")}”，责令限期整改，罚款${cad(f)}，处理结果已在网上公示。`,"bad");return}
+  S.fails++;S.lastFail=S.m;S.closed=1;S.rep-=15;S.ps-=15;const lp=Math.round(S.pre*.2),li=Math.round(S.inf*.2);S.pre-=lp;S.inf-=li;S.sn=Math.min(S.sn,S.pre);
+  S.reports.push(`第${S.m}个月 暂停营业整改：${v.join("、")}`);
+  log(`${reason}：发现${v.join("、")}，命令暂停营业两周整改。公示一出，${lp+li}个家长直接退园。`,"bad");}
+async function parentEvent(){const r=rnd(1,6);
+  if(r===1){const b=S.t.filter(x=>valid(x)&&x.cert!=="SUB");if(b.length<2)return;const t=pick(b);
+    await ask("一位家长堵在办公室门口",`「我要求我家孩子换到${t.n}的班，今天就换，不然我去投诉。」`,
+      [["答应换班（其他家长有意见）",()=>{S.ps-=3;t.mo-=8;log(`换了。${t.n}班上多了一个孩子，另外两个家长在群里问“凭什么”。`,"bad")}],
+       ["按规矩来，不能随便换",()=>{S.ps-=1;if(Math.random()<.35){S.qcomp++;log("家长真去投诉了。检查员来核实，发现没什么问题，只是多喝了你一杯茶。","info")}else log("家长嘟囔了几句走了。第二天照常送孩子。","good")}]])}
+  else if(r===2){await ask("尿布台前的尴尬","有个家长连续两周不带换洗衣服和尿布，老师一直用园里的备用品顶着。",
+      [["园里买单，别伤和气（C$200）",()=>{S.cash-=200;log("又买了一箱尿布。老师小声说：这家已经第三次了。","info")}],
+       ["认真谈一次",()=>{S.ps-=2;if(Math.random()<.3){S.pre=Math.max(0,S.pre-1);log("谈完第二天家长退园了，临走说你们太计较。","bad")}else log("谈完之后第二天书包里终于有了尿布。","good")}]])}
+  else if(r===3){await ask("六点半了，孩子还在","一个家长又迟到四十分钟才来接。老师在门口抱着孩子等，晚饭都凉了。",
+      [["按规定收迟接费（C$1/分钟）",()=>{S.cash+=40*(1+rnd(0,2));S.ps-=1;log("收了迟接费。家长付钱时脸拉得老长，但下次准时了。","good")}],
+       ["这次算了",()=>{S.t.forEach(x=>{if(valid(x))x.st-=4});S.ps+=1;log("免了。老师加了班，第二个星期那位家长又迟到了。","bad")}]])}
+  else if(r===4){S.ps-=3;log("家长群里有人发长文，说孩子回家说被老师“凶了”。真相是不让他吃第三块饼干。","bad")}
+  else if(r===5){S.ps+=3;log("一位家长送来自己烤的饼干感谢老师，附了张手写卡片。全园老师传阅了一遍。","good")}
+  else{S.ps-=2;log("一位家长坚持要求每天发二十张照片。老师现在拍照比带孩子还忙。","info")}}
+async function endMonth(){
+  const btn=document.getElementById("endbtn");if(btn.disabled)return;btn.disabled=true;S.reported=0;S.met=0;
+  for(const x of S.t){if(x.sick){x.sick--;if(x.sick<=0){x.sick=0;x.st=Math.round(maxSt(x)*.7);log(`${x.n}病好回来了，还有点虚。`,"info")}}if(x.away){x.away=0;log(`${x.n}回来上班了。`,"info")}}
+  // summer vacation requests
+  if(summer()){let asked=0;for(const x of S.t){if(asked||x.cert==="SUB"||x.sick||x.away||Math.random()>.25)continue;asked=1;
+    await ask(`${x.n}想休假`,`「${moy()===7?"七":"八"}月想回国一个月看看爸妈，机票都看好了。」${x.room>=0?"她带的是"+roomName(x.room)+"。":""}`,
+      [["批了（一个月不在）",()=>{x.away=1;x.mo=Math.min(100,x.mo+10);x.st=maxSt(x);log(`${x.n}休假去了，回来时体力满格。`,"info")}],
+       ["现在缺人，不批",()=>{x.mo-=12;if(Math.random()<.2){S.t=S.t.filter(y=>y!==x);log(`${x.n}第二天交了辞职信："那我不回来了。"`,"bad")}else log(`${x.n}没说什么，一下午没笑过。`,"bad")}]])}}
+  // sickness (days within the month; rare long illness in months)
+  S.gapDays=0;
+  for(const x of S.t){if(x.sick||x.away||x.cert==="SUB")continue;
+    const rc=x.room>=0?S.rooms[x.room]:null;const dirty=rc&&(rc.clean??80)<50?1.3:1;
+    const p=(flu()?.22:.08)*(1+(maxSt(x)-x.st)/40)*(x.age>50?1.4:x.age>40?1.15:1)*dirty;
+    if(Math.random()<p){
+      if(Math.random()<.08){x.sick=x.age<40?1:2;log(`${x.n}查出需要手术，医生说要休${x.sick}个月。`,"bad");
+        const sr=x.cert==="IT"?38:x.cert==="ECEA"?24:x.cert==="none"?19:30;if(!S.t.some(y=>y.cert==="SUB"&&y.subFor===x))await ask(`${x.n}长期病假`,`${x.room>=0?roomName(x.room)+"缺人。":"班上缺人。"}中介有${cname(x.cert)}代课老师，时薪 C$${sr}，按月计。`,
+          [["请一位代课老师",()=>{const oc=S.oncall.find(o=>o.subCert===x.cert);const sb=oc||newTeacher({cert:"SUB",subCert:x.cert==="none"?"ECEA":x.cert,s:rnd(1,5),age:rnd(24,55),rate:sr});if(oc)S.oncall=S.oncall.filter(o=>o!==oc);sb.subFor=x;sb.room=x.room;S.t.push(sb);S.ps-=2;log(`${oc?"On-call 的":"代课老师"}${sb.n}来了，${"●".repeat(sb.s)}，顶${x.n}的班。`,"info")}],
+           ["不请，大家扛一扛",()=>{S.t.forEach(y=>{if(!y.sick)y.st-=10});log("其他老师分摊了她的班，下班时都在揉腰。","bad")}]]);continue}
+      const days=x.age<35?rnd(2,5):x.age<50?rnd(3,7):rnd(5,10);x.sickDays=days;
+      if(x.cert==="none"){log(`${x.n}病了${days}天。RA 不在，教室有点乱。`,"info");if(x.room>=0)S.rooms[x.room].clean-=5;continue}
+      if(x.cert==="INTERN"){log(`实习生${x.n}病了${days}天。`,"info");continue}
+      const sr=x.cert==="IT"?38:x.cert==="ECEA"?24:30;const oc=S.oncall.find(o=>o.subCert===x.cert);const cost=Math.round(days*8*(oc?sr-3:sr)*1.12);
+      await ask(`${x.n}病了 ${days} 天`,`${flu()?"流感季，":""}医生开了${days}天假条${x.room>=0?"，"+roomName(x.room)+"这几天缺人":""}。${oc?"On-call 的"+oc.n+"可以来，":"中介可以派代课，"}${days} 天共 ${cad(cost)}。`,
+        [[`请代课 ${days} 天（${cad(cost)}）`,()=>{S.cash-=cost;log(`${oc?oc.n:"代课老师"}顶了${days}天。`,"info")}],
+         ["不请，大家扛几天",()=>{S.gapDays+=days;S.t.forEach(y=>{if(y.room===x.room&&y!==x)y.st-=Math.round(days*1.5)});S.ps-=1;log(`${x.n}的班由同事顶了${days}天。这几天要是检查员来……`,"bad")}]])}}
+  for(const x of [...S.t]){if(x.cert==="SUB"&&x.subFor&&!x.subFor.sick){S.t=S.t.filter(y=>y!==x);
+    await ask(`代课老师${x.n}的合同结束了`,`${x.subFor.n}回来了。${x.n}（${cname(x.subCert)}，${"●".repeat(x.s)}）问接下来怎么安排。`,
+      [[`转正（${cname(x.subCert)}，时薪 C$${x.rate-2}）`,()=>{const t=newTeacher({n:x.n,age:x.age,s:x.s,cert:x.subCert,rate:x.rate-2,mo:80,exp:rnd(12,50)});S.t.push(t);log(`${t.n}转正了，先放机动。`,"good")}],
+       ["列为 on-call（有事先叫她，便宜一点）",()=>{S.oncall.push(x);log(`${x.n}进了 on-call 名单。`,"info")}],
+       ["留在中介名单上",()=>log(`${x.n}走了，下次可能还是她。`,"info")]])}}
+  const T=S.t.length,skill=T?S.t.reduce((p,x)=>p+x.s,0)/T:0,mo=T?S.t.reduce((p,x)=>p+x.mo,0)/T:0,st=staffing();
+  const nE=S.t.filter(x=>valid(x)&&x.cert!=="ECEA"&&x.cert!=="none").length,we=Math.round(6*hoursPaid()*DAYS);
+  const sub=S.ccfri?S.pre*336+S.inf*520+nE*we:0;
+  const util=Math.round((600+150*S.rooms.length)*(winter()?1.3:1)),cons=kids()*45+S.inf*60,food=kids()*80,wages=Math.round(S.t.reduce((p,x)=>p+monthly(x),0)*1.12),mgr=4000,misc=800,lp=S.loan>0?Math.min(LOANPAY,S.loan+S.loan*.005):0;
+  const snPaid=S.sn-st.snGap;if(st.snGap)S.ps-=2;const inc=S.closed?.5*(S.pre*S.tp+S.inf*S.ti+snPaid*800+sub):S.pre*S.tp+S.inf*S.ti+snPaid*800+sub,exp=S.rent+S.rooms.reduce((p,r)=>p+(r.type==="pre"?1500:2000),0)+util+cons+food+wages+mgr+misc+S.toys*200+lp;
+  if(S.loan>0){S.loan=Math.max(0,S.loan+S.loan*.005-LOANPAY);if(S.loan===0)log("银行贷款还清了！你请全体老师喝了奶茶。","good")}
+  S.cash+=inc-exp;S.qp+=inc-exp;
+  log(S.closed?`停业两周整改，本月收入减半 ${cad(inc)}，支出${cad(exp)}。`:`本月收入${cad(inc)}${S.ccfri?"（含政府补贴"+cad(sub)+"）":""}，支出${cad(exp)}：工资${cad(wages)}、房租${cad(S.rent+S.rooms.reduce((p,r)=>p+(r.type==="pre"?1500:2000),0))}、水电${cad(util)}、消耗品${cad(cons)}、餐食${cad(food)}、园长工资${cad(mgr)}、保险杂费${cad(misc)}${lp?"、还贷"+cad(lp):""}。净${cad(inc-exp)}。`,inc-exp>=0?"good":"bad");
+  const wasClosed=S.closed;S.closed=0;
+  const dist=distribute();S.rooms.forEach((r,i)=>{const stf=S.t.filter(x=>x.room===i&&valid(x));let c=(r.clean??80)-dist[i]*1.0+(S.cleanSvc?30:0)+stf.length*6+stf.filter(x=>x.cert==="none").length*19+stf.filter(x=>x.cert==="INTERN").length*2+stf.filter(x=>x.cert==="ECEA").length*4;r.clean=Math.max(0,Math.min(100,c));if(r.clean<50)S.ps-=1});
+  if(S.cleanSvc)S.cash-=800;
+  for(const x of [...S.t]){if(x.cert==="INTERN"){x.left--;if(x.left<=0){S.t=S.t.filter(y=>y!==x);await ask(`实习生${x.n}结束实习了`,`${x.n}拿到了 ECEA 证，问能不能留下。时薪 C$21，她熟悉园里的一切。`,
+      [["留下当 ECEA",()=>{S.t.push(newTeacher({n:x.n,age:x.age,s:1,cert:"ECEA",rate:21,mo:85,exp:12}));log(`${x.n}留下了。`,"good")}],["祝她好运",()=>log(`${x.n}走了，临走给每个孩子写了张卡片。`,"info")]])}}}
+  if([1,5,9].includes(moy())&&Math.random()<.45&&S.t.some(x=>isLead(x)&&valid(x))){const t=newTeacher({cert:"INTERN",age:rnd(19,28),s:1,rate:0,left:3});
+    await ask("学院来电话","「有个 ECE 学生要找实习点，三个月，不用付工资，能做 ECEA 的活，但得有 ECE 带着。」",
+      [["收下实习生",()=>{S.t.push(t);log(`实习生${t.n}来了，三个月。带她的老师会多费点神。`,"info")}],["这学期不方便",null]])}
+  const brkMo=S.brk.paid?2:S.brk.min===60?-3:0;
+  S.t.forEach(x=>{if(x.cert!=="none"&&x.cert!=="SUB"&&x.cert!=="INTERN"){x.exp--;if(x.exp===0)log(`${x.n}的证书到期了！续期或者别让她带班。`,"bad");if(x.s<5&&!x.sick&&!x.away){x.xp=(x.xp||0)+rnd(3,9);if(x.xp>=100){x.s++;x.xp-=100;log(`${x.n}带班一年多，经验涨了一级。`,"good")}}}
+    const rc=x.room>=0?st.rows[x.room]:null;const load=(rc&&(rc.iss.length?12:rc.grey?6:3)||2)+(rc&&S.t.some(y=>y.cert==="INTERN"&&y.room===x.room)&&isLead(x)?2:0);
+    if(!x.sick&&!x.away){x.st=Math.max(0,Math.min(maxSt(x),x.st-load+(summer()?4:0)+(S.brk.min===60?2:0)))}
+    x.sickDays=0;x.mo=Math.max(0,Math.min(100,x.mo-2+brkMo+(mo<50?-3:0)+(x.bait?-7:0)+(S.t.some(y=>y.nep)&&!x.nep?-2:0)+(rc&&rc.iss.length?-8:rc&&rc.grey?-3:0)+(x.st<30?-4:0)+(x.ref?1:0)))});
+  S.ps+=(skill-2)*.8+(S.toys-1)*.4+(mo-65)/30+(st.state==="合规"?1:st.state==="灰色"?-.5:-3)-(oop("pre")-700)/500-S.t.filter(x=>x.cert==="SUB").length*.5;clampPS();
+  let d=(skill-2)*1+(S.toys-1)*.5+(mo-65)/25+(S.ps-55)/15;
+  if(st.state==="违规"){d-=2;log("有的班人手不够，老师们嗓子都喊哑了，家长群里开始抱怨。点“配置”看哪里出了问题。","bad")}
+  else if(st.state==="灰色"){d-=.5;log("婴幼儿班由 ECE 顶着，三证老师不在。别被抓到。","info")}
+  if(S.pre>capP()||S.inf>capI()){d-=3;S.ps-=3;log("教室塞得满满当当，午睡都得排队。","bad")}
+  for(const x of [...S.t]){if(x.cert==="SUB")continue;if(x.bait&&x.mo<35){S.t=S.t.filter(y=>y!==x);S.qcomp++;
+    log(`${x.n}辞职了，临走说："说好的高薪呢？"她向 licensing 投诉了。`,"bad");inspect("老师投诉后检查员上门核实")}
+    else if(x.mo<30&&Math.random()<(x.ref?.3:.5)){S.t=S.t.filter(y=>y!==x);S.ps-=4;log(`${x.n}递了辞职信：${x.cert==="IT"?'“隔壁开 C$38 一小时挖我。”':'“我想去大理开民宿。”'}家长问：怎么又换老师？`,"bad")}}
+  if((st.state==="违规"||S.pre>capP()||S.inf>capI()||S.ps<40||S.rooms.some(r=>(r.clean??80)<30))&&!wasClosed&&Math.random()<.3){S.qcomp++;
+    log("一位家长向 licensing 投了诉。检查员来了，分别找园长和当班老师谈话。","bad");inspect("家长投诉后检查员上门核实")}
+  if(!wasClosed){if(S.m%6===0)inspect("定期检查");else if(Math.random()<.08)inspect("突击检查")}
+  if(Math.random()<.15&&S.t.length){const x=pick(S.t.filter(y=>y.cert!=="SUB"))||S.t[0];
+    if(x.cert==="none"||x.cert==="INTERN"){log(`资质抽查：${x.n}是${cname(x.cert)}，检查员确认她没有单独带班，翻了翻犯罪记录检查，走了。`,"good")}
+    else if(x.exp<=0){await ask("资质抽查",`检查员抽到了${x.n}，发现证书已过期。`,
+      [["现场补办续期（C$300，需有培训时数）",()=>{if(x.trained){S.cash-=300;x.exp=60;x.trained=0;log(`${x.n}续了证，检查员记了一笔“已整改”。`,"good")}else{S.cash-=3000*D.fine;S.rep-=3;log(`${x.n}没有培训时数，续不了。检查员开了${cad(3000*D.fine)}罚单，限期整改。`,"bad")}}],
+       ["让她停课回炉重学（一个月不带班）",()=>{x.exp=60;x.trained=0;x.away=1;log(`${x.n}回学校补课一个月，这个月不能算进师生比。`,"info")}]])}
+    else if(x.cert!=="SUB")log(`资质抽查：${x.n}证书有效，检查员点点头走了。`,"good")}
+  if(Math.random()<.12&&S.t.some(x=>x.cert!=="SUB"&&x.mo>=60)){const r=pick(S.t.filter(x=>x.cert!=="SUB"&&x.mo>=60));const t=newTeacher({ref:1,mo:rnd(75,95)});
+    await ask(`${r.n}推荐了一位同学`,`「${t.n}，${t.age}岁，${cname(t.cert)}，${"●".repeat(t.s)}，想要 C$${t.rate}/h。人靠谱，我担保。」不用付中介费。`,
+      [["收下",()=>{S.t.push(t);r.mo=Math.min(100,r.mo+5);const w=place(t);log(`${t.n}通过内推入职了，${w}。有熟人在，她比一般新人稳得多。`,"good")}],
+       ["暂时不缺人",()=>log(`${r.n}“哦”了一声。`,"info")]])}
+  if(Math.random()<.4)await parentEvent();
+  const ev=rnd(1,14);
+  if(ev===1&&flu()){const n=Math.min(S.pre,rnd(2,5));S.cash-=1500;S.ps-=2;log(`流感在班里传开了，${n}个孩子请假一周，消毒水买了一箱。`,"bad")}
+  else if(ev===2){d+=4;S.ps+=3;log("有家长把孩子的手工发到小红书，点赞两千多，电话被打爆。","good")}
+  else if(ev===3){d-=3;log("两个家长因为孩子抢玩具在门口吵起来，园长调解了一小时。","bad")}
+  else if(ev===4){S.cash-=1200;log("小朋友把班里的仓鼠放跑了，全园找了一下午，最后在厨房找到。","info")}
+  else if(ev===5&&S.toys>=3){d+=2;log("教育局领导来参观，对教具赞不绝口。","good")}
+  else if(ev===6&&winter()){S.cash-=2500;log("暖气坏了一周，修理工说：这机器比你年纪都大。","bad")}
+  else if(ev===7&&S.inf>0){S.cash-=600;log("婴幼儿班一天用掉三包尿布，还有个孩子把午饭全吐在了三证老师身上。","info")}
+  else if(ev===8){S.rent=Math.round(S.rent*1.05);log(`房东来信：租金上调 5%，现在每月 ${cad(S.rent)}。信末祝你生意兴隆。`,"bad")}
+  else if(ev===9){S.cash-=2000;log("厕所水管爆了，一楼淹了半间教室。修理加清洁两千块。","bad")}
+  else if(ev===10){log("停电三小时。老师们点着应急灯讲故事，孩子们反而说这是最好玩的一天。","info");S.ps+=1}
+  else if(ev===11){if(Math.random()<.5){S.cash-=1000*D.fine;S.rep-=2;log("消防局抽查演练记录，发现上季度少做了一次。开了罚单。","bad")}else log("消防局来看了演练记录，表扬了一句。","good")}
+  else if(ev===12){S.cash-=1500;S.ps+=4;d+=2;log("组织了一次去农场的 field trip。租车花了一千五，孩子们见到了真正的羊。","good")}
+  else if(ev===13){S.cash+=1500;log("一位家长的公司搞公益，捐了一千五买绘本。","good")}
+  if(moy()===12){S.cash-=2000;S.t.forEach(x=>x.mo=Math.min(100,x.mo+15));log("年底年会：抽奖、K 歌、一桌菜。花了两千，老师们的士气回来了一大截。","good")}
+  const ob=Math.random();
+  if(ob<.06*D.ob*(flu()?2:1)){const kind=pick(["手足口病","诺如病毒","大规模流感"]);const sickK=Math.min(kids(),rnd(4,10));const sickT=S.t.filter(x=>!x.sick&&!x.away&&Math.random()<.25);
+    await ask(`${kind}在园里传开了`,`${sickK} 个孩子和 ${sickT.length} 位老师中招。按规定要向 licensing 和 Fraser Health 上报，可能要停课消毒两天。`,
+      [["主动上报，停课两天彻底消毒（C$2,500）",()=>{S.cash-=2500;S.ps-=2;S.rep+=1;sickT.forEach(x=>x.sick=1);log(`上报了${kind}。停课两天，消毒公司来了三个人。家长虽然抱怨，但都说处理得规矩。`,"info")}],
+       ["自己悄悄消毒，不上报",()=>{S.cash-=800;sickT.forEach(x=>x.sick=1);if(Math.random()<.45){S.cash-=5000*D.fine;S.rep-=8;S.ps-=8;S.reports.push(`第${S.m}个月 未上报${kind}疫情`);log(`没上报${kind}，结果一个家长自己打电话去了。罚款${cad(5000*D.fine)}，公示上写着“未上报传染病”。`,"bad")}else log(`没上报${kind}，自己消了毒。这次没人追究。`,"info")}]]);
+    S.cash-=sickK*30;if(sickT.length&&Math.random()<.5)log("老师病倒了，记得看看要不要请代课。","bad")}
+  else if(flu()&&Math.random()<.35){await ask("发烧的孩子被送来了","早上一个家长把明显发烧的孩子送来，说“吃了退烧药，没事”，转身就走。",
+      [["打电话让家长接回去（家长不高兴）",()=>{S.ps-=2;log("家长半小时后黑着脸来接了。老师松了口气。","good")}],
+       ["让他留下，单独看着",()=>{if(Math.random()<.4){const n=Math.min(S.pre,rnd(3,6));S.ps-=4;S.cash-=n*40;const t=pick(S.t.filter(x=>!x.sick&&!x.away));if(t){t.sick=1;log(`三天后全班${n}个孩子发烧请假，${t.n}也倒了。家长群炸了。`,"bad")}else log(`三天后全班${n}个孩子发烧请假。家长群炸了。`,"bad")}else log("这次运气好，没传开。","info")}]])}
+  const O=S.owner;
+  if(D.bail&&S.cash<0&&Math.random()<.5){const need=8000-S.cash;S.cash+=need;O.trust-=4;log(`${O.name}看了账面，转了 ${cad(need)} 过来："先垫着。这钱我记着。"`,"owner")}
+  else if(S.cash<12000&&Math.random()<.25&&!S.rentDue){S.rentDue=1;S.cash+=S.rent;O.trust+=2;log(`${O.name}给房东打了个电话，这个月房租先欠着。他说这种事你别管，他来周旋。下个月得补上。`,"owner")}
+  if(S.rentDue&&Math.random()<.5){S.rentDue=0;S.cash-=S.rent+500;S.ps-=2;log(`房东来了，站在门口等到把欠的房租加 C$500 滞纳金拿走。几个家长看见了。`,"bad")}
+  if(O.type==="厚道"&&(moy()===2||moy()===12)){S.t.forEach(x=>x.mo=Math.min(100,x.mo+12));log(`${O.name}给每位老师送了 gift card，办公室里一片“哇”。`,"owner")}
+  const oe=Math.random(),tpen=n=>Math.round(n*D.tp);
+  if(oe<.10&&(O.type==="关系户"||oe<.05)){await ask(`${O.name}打来电话`,"「我一个朋友的孩子想入园，你安排到最好的那位老师班上，帮我个忙。」",
+    [["答应（那位老师会很累）",()=>{S.pre++;const b=S.t.reduce((p,x)=>x.s>p.s?x:p,S.t[0]);if(b){b.mo-=12;log(`关系户孩子进了${b.n}的班，${b.n}脸上笑着，心里在算师生比。`,"owner")}O.trust+=5}],
+     [`婉拒（信任 −${tpen(6)}）`,()=>{O.trust-=tpen(6);log(`${O.name}沉默了两秒："行吧，你是园长。"`,"owner")}]])}
+  else if(oe<.17&&(O.type==="关系户"||oe<.14)){const cert=pick(["ECEA","none"]);await ask(`${O.name}发来微信`,`「我表妹想来当老师，${cert==="none"?"证还没考，先做 RA 打打下手":"有 ECEA 证"}，时薪按 C$24 开。」`,
+    [["收下（可能被抽查到）",()=>{const t=newTeacher({s:1,cert,rate:24,nep:1,age:rnd(20,26),exp:cert==="none"?0:12});S.t.push(t);O.trust+=6;log("表妹来了，第一天就迟到二十分钟。其他老师面面相觑。她在机动位，你看着办。","owner")}],
+     [`婉拒（信任 −${tpen(8)}）`,()=>{O.trust-=tpen(8);log(`${O.name}："亲戚的事都不帮，以后谁帮你？"`,"owner")}]])}
+  else if(oe<.23&&O.type==="精明"){await ask(`${O.name}的主意`,"「招聘广告上把时薪写高一点，人来了再说。老师嘛，进来了就不好走了。」",
+    [["照办（能招到好老师，但……）",()=>{const t=newTeacher({s:4,cert:"ECE",bait:1,rate:27});S.t.push(t);O.trust+=5;const w=place(t);log(`${t.n}冲着高薪来了，经验很足，${w}。第一个月发薪日，她皱了皱眉。`,"owner")}],
+     [`拒绝（信任 −${tpen(5)}）`,()=>{O.trust-=tpen(5);log(`${O.name}："你这人太老实，做不了大事。"`,"owner")}]])}
+  else if(oe<.27&&O.type!=="厚道"){await ask(`${O.name}视察`,"「教室这么大，每班多塞两个孩子怎么了？收入马上就上来了。」",
+    [["照办（超员风险）",()=>{S.pre+=2*preRooms().length;S.inf+=2*infRooms().length;O.trust+=6;log("每班多了两个孩子，午睡垫子已经铺到门口了。","owner")}],
+     [`解释规定（信任 −${tpen(4)}）`,()=>{O.trust-=tpen(4);log(`${O.name}翻了个白眼："规定规定，规定能赚钱吗？"`,"owner")}]])}
+  else if(oe<.31&&S.ccfri&&O.type==="精明"){log(`${O.name}看着 CCFRI 的学费上限直摇头："隔壁不拿补贴，学费收两千二。我们这算什么？"`,"owner")}
+  if(S.m%3===0){let sc=0;const rate=kids()/Math.max(1,capP()+capI());
+    if(S.qp>0)sc++;if(rate>=.7)sc++;if(S.qcomp<=1)sc++;if(O.type==="精明"&&S.qp<12000)sc--;
+    const dt=sc>=3?12:sc===2?6:sc===1?-tpen(5):-tpen(10);O.trust+=dt;
+    log(`季度考核：利润${cad(S.qp)}、入园率${Math.round(rate*100)}%、投诉${S.qcomp}起。${O.name}${dt>0?"很满意，信任 +"+dt:"不高兴，信任 "+dt}。`,"owner");S.qp=0;S.qcomp=0}
+  if(inc-exp>0)O.trust+=1;O.trust=Math.max(0,Math.min(100,O.trust));S.rep=Math.max(0,Math.min(100,S.rep+d));clampPS();
+  if(S.fails>0&&S.m-(S.lastFail||0)>=12){S.fails--;S.lastFail=S.m;log("一年过去了，licensing 记录里的一条整改记录过期了。","good")}
+  if(moy()===4&&S.ccfri){S.fy={pre:S.tp,inf:S.ti};log("新的 CCFRI 年度开始了，学费涨幅额度刷新。","info")}
+  if(S.inf>0&&Math.random()<S.inf/24){S.inf--;if(S.pre<capP()){S.pre++;log("一个孩子满三岁，从婴幼儿班升到学龄前班。","info")}else log("一个孩子满三岁该升班，学龄前没位子，家长只好转园。","bad")}
+  if(moy()===9&&S.pre>0){const g=Math.round(S.pre*.3);S.pre-=g;S.sn=Math.min(S.sn,S.pre);log(`九月开学，${g}个大班孩子毕业去上小学了。家长送了锦旗，位子空出来了。`,"info")}
+  const base=3+(S.rep-40)/6+(S.ps-60)/15+S.heat*3+D.dem;S.heat=Math.max(0,S.heat-1);
+  const dp=Math.round(base-(oop("pre")-700)/200+rnd(-1,2)),di=Math.round(base*.8+2-(oop("inf")-900)/250+rnd(0,2));
+  if(dp>0){const n=Math.min(dp,capP()-S.pre);if(n>0){S.pre+=n;log(`${n}个新孩子进了学龄前班，家长在门口哭得比孩子还凶。`,"good");
+      if(Math.random()<.3){await ask("一位家长来咨询","「我儿子有自闭症谱系诊断，有政府支持经费。你们能收吗？」",
+        [["收（需要 SN 老师支持，每月补贴 C$800）",()=>{S.sn++;log(st.IT?"特殊需要的孩子入园了，三证老师接过了他的手。":"特殊需要的孩子入园了，可是园里没有 SN 老师……","good")}],
+         ["婉拒（口碑 −2）",()=>{S.rep-=2;log("家长走的时候没说话。第二天家长群里有人说你们“挑孩子”。","bad")}]])}}
+    else if(capP()-S.pre<=0)log("还有家长想报名学龄前班，可是没位子了。","info")}
+  else if(dp<0&&S.pre>0){const n=Math.min(-dp,S.pre);S.pre-=n;S.sn=Math.min(S.sn,S.pre);log(`${n}个孩子转园了，家长说“隔壁那家有游泳池”。`,"bad")}
+  if(di>0){if(capI()>0){const n=Math.min(di,capI()-S.inf);if(n>0){S.inf+=n;S.infWait=Math.max(0,S.infWait-n);log(`${n}个婴幼儿入园，排队的家长终于松了口气。`,"good")}else log(`婴幼儿班满了，还有${S.infWait+di}个家长在排队。`,"info")}
+    else{S.infWait=Math.min(30,S.infWait+di);if(S.m%3===1)log(`已经有${S.infWait}个家长在问有没有婴幼儿班。这附近最缺的就是这个。`,"info")}}
+  S.m++;render();
+  if(S.cash<-20000)return over("关门大吉",`资金耗尽，房东把${S.kn}的招牌摘了下来。你撑了 ${S.m-1} 个月。`);
+  if(S.fails>=4)return over("执照吊销","第三次不合格。检查员摇着头说：园长，孩子不是数字。");
+  if(O.trust<=0)return over("你被解雇了",`${O.name}说："换个能干的人来吧。"${S.mn}在第 ${S.m-1} 个月收拾了办公桌。`);
+  if(S.rep>=95&&kids()>=60)return over("全国最佳幼儿园！",`用了 ${S.m-1} 个月，${S.kn}登上了全国榜首。你终于明白：办幼儿园，真的不简单。`);
+  if(S.rep>=85&&kids()>=40&&!S.city){S.city=1;log(`🎉 ${S.kn}成为本市评价第一的幼儿园！下一站：全国。`,"good");render()}
+  btn.disabled=false;
+}
+async function setup(lvl){
+  D=DIFF[lvl];S.kn=document.getElementById("inK").value.trim()||"小星星幼儿园";S.mn=document.getElementById("inM").value.trim()||"园长";
+  document.getElementById("setup").classList.remove("show");
+  S.cash=50000;S.loan=D.loan;S.owner.trust=D.trust;S.rep=D.rep;
+  S.t=[newTeacher({n:"王老师",age:38,s:3,cert:"ECE",exp:38,trained:1,rate:27.5}),newTeacher({n:"李老师",age:24,s:1,cert:"ECEA",exp:5,rate:21})];
+  if(lvl!=="hard")await ask("你面试了三位 Owner","园长是打工的，但可以挑老板。硬核难度不给挑。",OT.map(o=>[`${o.name} · ${o.type}型：${o.desc}`,()=>{S.owner={...o,trust:D.trust}}]));
+  await ask("25 个位子怎么分？","一个大班（学龄前 25 位）好赚钱，慢慢填满；一个学龄前 13 位加一个婴幼儿 12 位能吃到最大的需求，但要养一位三证老师。",
+    [["一个学龄前大班（25 位）",()=>{S.rooms=[{type:"pre",cap:25,clean:85}];S.pre=12}],
+     ["学龄前 13 位 + 婴幼儿 12 位",()=>{S.rooms=[{type:"pre",cap:13,clean:85},{type:"inf",cap:12,clean:85}];S.pre=10;S.inf=4;S.t.push(newTeacher({n:"陈老师",age:33,s:3,cert:"IT",exp:30,rate:33}))}]]);
+  autoAssign();
+  log(`欢迎上任，${S.mn}。Owner 是${S.owner.name}，${S.owner.type}型：${S.owner.desc}`,"owner");
+  S.fy={pre:S.tp,inf:S.ti};log(D.loan?`${S.kn}开张了。C$50,000 是银行贷款，五年还清，每月 ${cad(LOANPAY)}。房东、水电、尿布和纸巾都在等你。`:`${S.kn}开张了。你有 C$50,000 启动资金，${S.t.length}位老师。`);log("Owner 已经签了 CCOF/CCFRI 协议——大温的园不拿补贴现金流扛不住。想退出随时可以，后果自负。","info");
+  render();}
+render();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
